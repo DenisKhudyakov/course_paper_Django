@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 NULLABLE = {'blank': True, 'null': True}
 
+
 class Client(models.Model):
 
     """Клиент сервиса, поля email, ФИО, комментарий"""
