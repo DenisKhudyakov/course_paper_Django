@@ -56,20 +56,20 @@ class MailingSettingsCreateView(CreateView):
     """Класс создания рассылки"""
     model = MailingSettings
     fields = '__all__'
-    success_url = reverse_lazy('mailservice:')
+    success_url = reverse_lazy('mailservice:settings')
 
 
 class MailingSettingsUpdateView(UpdateView):
     """Класс обновления рассылки"""
     model = MailingSettings
     fields = '__all__'
-    success_url = reverse_lazy('mailservice:')
+    success_url = reverse_lazy('mailservice:settings')
 
 
 class MailingSettingsDeleteView(DeleteView):
     """Класс удаления рассылки"""
     model = MailingSettings
-    success_url = reverse_lazy('mailservice:')
+    success_url = reverse_lazy('mailservice:settings')
 
 
 class MessageListView(ListView):
@@ -86,17 +86,17 @@ class MessageCreateView(CreateView):
     """Класс создания сообщения"""
     model = Message
     fields = '__all__'
-    success_url = reverse_lazy('mailservice:')
+    success_url = reverse_lazy('mailservice:messages')
 
 
 class MessageUpdateView(UpdateView):
     """Класс редактирования сообщения"""
     model = Message
     fields = '__all__'
-    success_url = reverse_lazy('mailservice:')
+    success_url = reverse_lazy('mailservice:messages')
 
 
 class MessageDeleteView(DeleteView):
     """Класс удаления сообщения"""
     model = Message
-    success_url = reverse_lazy('mailservice:')
+    success_url = reverse_lazy('mailservice:messages')

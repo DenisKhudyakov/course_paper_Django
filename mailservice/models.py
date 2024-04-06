@@ -22,8 +22,8 @@ class Client(models.Model):
 
 class Message(models.Model):
 
-    title = models.CharField(max_length=150, verbose_name='тема рассылки')
-    body = models.TextField(verbose_name='текст рассылки', **NULLABLE)
+    title = models.CharField(max_length=150, verbose_name='Заголовок')
+    body = models.TextField(verbose_name='Текс сообщения', **NULLABLE)
 
     def __str__(self):
         return f'{self.title}, {self.body[:50]}...'
@@ -71,7 +71,7 @@ class Logs(models.Model):
     status = models.BooleanField(verbose_name='статус рассылки')
     server_response = models.CharField(verbose_name='ответ почтового сервера', **NULLABLE)
     message = models.ForeignKey(Message, verbose_name='сообщение', on_delete=models.CASCADE)
-    client = models.ForeignKey(Client, verbose_name='клиент', on_delete=models.CASCADE)
+    # client = models.ForeignKey(Client, verbose_name='клиент', on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.date}, {self.status}'

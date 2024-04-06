@@ -2,7 +2,8 @@
     <h5 class="my-0 mr-md-auto font-weight-normal">Сервис рассылок сообщений</h5>
     <nav class="ms-5">
         <a class="p-2 btn btn-outline-primary" href="{% url 'mailservice:clients' %}">Список клиентов</a>
-        <a class="p-2 btn btn-outline-primary" href="#">Рассылки</a>
+        <a class="p-2 btn btn-outline-primary" href="{% url 'mailservice:messages' %}">Сообщения</a>
+        <a class="p-2 btn btn-outline-primary" href="{% url 'mailservice:settings' %}">Рассылки</a>
         <a class="p-2 btn btn-outline-primary" href="#">Лог рассылок</a>
 
         {% if user.is_authenticated %}
