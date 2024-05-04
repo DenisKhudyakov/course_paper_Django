@@ -50,7 +50,7 @@ class MailingSettingsListView(ListView):
 class MailingSettingsDetailView(DetailView):
     """Класс отображения отдельной рассылки"""
     model = MailingSettings
-
+    
 
 class MailingSettingsCreateView(CreateView):
     """Класс создания рассылки"""

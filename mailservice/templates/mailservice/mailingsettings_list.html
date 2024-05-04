@@ -25,9 +25,7 @@
     </div>
     {% endfor %}
 </div>
- <div class="row text-right mt-4">
-        <div class="col-12">
-            <a class="p-2 btn btn-outline-primary btn-block btn-lg" href="{% url 'mailservice:settings-create' %}">Создать рассылку</a>
-        </div>
- </div>
+    <div style="text-align: center">
+        <a class="btn btn-outline-primary" href="{% url 'mailservice:settings-create' %}">Создать рассылку</a>
+    </div>
 {% endblock %}
