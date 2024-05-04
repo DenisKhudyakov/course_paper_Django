@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from msilib.schema import ListView
 
-# Create your views here.
+from blog.models import Post
+
+
+class PostListView(ListView):
+    """Контроллер отображения постов"""
+
+    model = Post
+    template_name = ""
