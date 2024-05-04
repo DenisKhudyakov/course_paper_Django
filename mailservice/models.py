@@ -84,11 +84,10 @@ class Logs(models.Model):
     server_response = models.CharField(
         verbose_name="ответ почтового сервера", **NULLABLE
     )
-    message = models.ForeignKey(
-        Message, verbose_name="сообщение", on_delete=models.CASCADE
+    client = models.ForeignKey(Client, verbose_name="клиент", on_delete=models.CASCADE)
+    mailing_settings = models.ForeignKey(
+        MailingSettings, verbose_name="настройка рассылки", on_delete=models.CASCADE
     )
-    client = models.ForeignKey(Client, verbose_name='клиент', on_delete=models.CASCADE)
-    mailing_settings = models.ForeignKey(MailingSettings, verbose_name="настройка рассылки", on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.date}, {self.status}"

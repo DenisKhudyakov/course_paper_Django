@@ -14,6 +14,7 @@ class PostListView(ListView):
 
 class PostDetailView(DetailView):
     """Контроллер отображения поста"""
+
     model = Post
 
     def get(self, request, *args, **kwargs):
