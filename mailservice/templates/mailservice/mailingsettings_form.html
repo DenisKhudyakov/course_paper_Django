@@ -3,13 +3,13 @@
 {% block content %}
 <form method="post" class="row">
     {% csrf_token %}
-    <div class="col-md-6">
+    <div class="col-md-6 m-4">
         <div class="card mb-4 box-shadow">
             <div class="card-header">
                 <h3>Рассылка</h3>
             </div>
             <div class="card-body">
-                {{ form|crispy }}
+                {{ form.as_p}}
                 <button type="submit" class="btn btn-primary">
                     {% if object %}
                     Изменить

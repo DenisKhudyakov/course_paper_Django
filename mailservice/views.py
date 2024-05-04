@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
+
+from mailservice.forms import MailingSettingsForm, MessageForm, ClientForm
 from mailservice.models import Client, MailingSettings, Message
 
 
@@ -21,7 +23,7 @@ class ClientDetailView(DetailView):
 class ClientCreateView(CreateView):
     """Класс создания клиента"""
     model = Client
-    fields = '__all__'
+    form_class = ClientForm
 
     def get_success_url(self):
         return reverse('mailservice:clients')
@@ -30,7 +32,7 @@ class ClientCreateView(CreateView):
 class ClientUpdateView(UpdateView):
     """Класс редактирования клиента"""
     model = Client
-    fields = '__all__'
+    form_class = ClientForm
 
     def get_success_url(self):
         return reverse('mailservice:clients')
@@ -55,14 +57,14 @@ class MailingSettingsDetailView(DetailView):
 class MailingSettingsCreateView(CreateView):
     """Класс создания рассылки"""
     model = MailingSettings
-    fields = '__all__'
+    form_class = MailingSettingsForm
     success_url = reverse_lazy('mailservice:settings')
 
 
 class MailingSettingsUpdateView(UpdateView):
     """Класс обновления рассылки"""
     model = MailingSettings
-    fields = '__all__'
+    form_class = MailingSettingsForm
     success_url = reverse_lazy('mailservice:settings')
 
 
@@ -85,14 +87,14 @@ class MessageDetailView(DetailView):
 class MessageCreateView(CreateView):
     """Класс создания сообщения"""
     model = Message
-    fields = '__all__'
+    form_class = MessageForm
     success_url = reverse_lazy('mailservice:messages')
 
 
 class MessageUpdateView(UpdateView):
     """Класс редактирования сообщения"""
     model = Message
-    fields = '__all__'
+    form_class = MessageForm
     success_url = reverse_lazy('mailservice:messages')
 
 
