@@ -19,19 +19,6 @@ class Client(models.Model):
         verbose_name_plural = "клиенты"
 
 
-class Message(models.Model):
-
-    title = models.CharField(max_length=150, verbose_name="Заголовок")
-    body = models.TextField(verbose_name="Текс сообщения", **NULLABLE)
-
-    def __str__(self):
-        return f"{self.title}, {self.body[:50]}..."
-
-    class Meta:
-        verbose_name = "сообщение"
-        verbose_name_plural = "сообщения"
-
-
 class MailingSettings(models.Model):
     """Класс рассылки, поля дата и время, периодичность(раз в день, раз в неделю, раз в месяц),
     статус рассылки(завершена, создана, запущена)
@@ -57,12 +44,7 @@ class MailingSettings(models.Model):
         max_length=50, choices=StatusMailingSettings, verbose_name="статус"
     )
     client = models.ManyToManyField(Client, verbose_name="клиенты рассылки")
-    message = models.ForeignKey(
-        Message,
-        verbose_name="сообщения",
-        on_delete=models.CASCADE,
-        related_name="message",
-    )
+
 
     def __str__(self):
         return f"{self.date_and_time},{self.period}, {self.status}, {self.client}"
@@ -70,6 +52,20 @@ class MailingSettings(models.Model):
     class Meta:
         verbose_name = "настройка рассылки"
         verbose_name_plural = "настройки рассылки"
+
+
+class Message(models.Model):
+
+    title = models.CharField(max_length=150, verbose_name="Заголовок")
+    body = models.TextField(verbose_name="Текс сообщения", **NULLABLE)
+    mailing_settings = models.ForeignKey(MailingSettings, on_delete=models.CASCADE, verbose_name="рассылка", **NULLABLE)
+
+    def __str__(self):
+        return f"{self.title}, {self.body[:50]}..."
+
+    class Meta:
+        verbose_name = "сообщение"
+        verbose_name_plural = "сообщения"
 
 
 class Logs(models.Model):

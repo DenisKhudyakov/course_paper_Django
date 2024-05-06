@@ -1,4 +1,6 @@
 from django.apps import AppConfig
+from django.core.management import call_command
+
 
 
 class MailserviceConfig(AppConfig):
@@ -6,4 +8,4 @@ class MailserviceConfig(AppConfig):
     name = "mailservice"
 
     def ready(self):
-        pass
+        call_command('send_mailing')
