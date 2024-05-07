@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 NULLABLE = {"blank": True, "null": True}
@@ -34,7 +35,9 @@ class MailingSettings(models.Model):
         CREATED = "Создана", _("Создана")
         COMPLETED = "Завершена", _("Завершена")
 
-    date_and_time = models.DateField(verbose_name="дата и время первой рассылки")
+    date_and_time = models.DateField(
+        default=timezone.now, verbose_name="дата и время первой рассылки"
+    )
     period = models.CharField(
         max_length=50,
         choices=PeriodMailingSettings,
@@ -44,7 +47,6 @@ class MailingSettings(models.Model):
         max_length=50, choices=StatusMailingSettings, verbose_name="статус"
     )
     client = models.ManyToManyField(Client, verbose_name="клиенты рассылки")
-
 
     def __str__(self):
         return f"{self.date_and_time},{self.period}, {self.status}, {self.client}"
@@ -58,7 +60,9 @@ class Message(models.Model):
 
     title = models.CharField(max_length=150, verbose_name="Заголовок")
     body = models.TextField(verbose_name="Текс сообщения", **NULLABLE)
-    mailing_settings = models.ForeignKey(MailingSettings, on_delete=models.CASCADE, verbose_name="рассылка", **NULLABLE)
+    mailing_settings = models.ForeignKey(
+        MailingSettings, on_delete=models.CASCADE, verbose_name="рассылка", **NULLABLE
+    )
 
     def __str__(self):
         return f"{self.title}, {self.body[:50]}..."

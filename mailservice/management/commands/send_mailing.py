@@ -1,16 +1,19 @@
-from datetime import datetime
+import smtplib
+from datetime import datetime, timedelta
 
 import pytz
 from apscheduler.schedulers.background import BackgroundScheduler
 from django.core.mail import send_mail
 from django.core.management import BaseCommand
+from django.db.models import F
 
 from config import settings
-from mailservice.models import MailingSettings, Message
+from mailservice.models import MailingSettings, Message, Logs
 
 
 class Command(BaseCommand):
     """Класс для запуска APScheduler."""
+
     help = "Runs APScheduler."
 
     @staticmethod
@@ -18,16 +21,48 @@ class Command(BaseCommand):
         """Отправляет письмо."""
         zone = pytz.timezone(settings.TIME_ZONE)
         current_datetime = datetime.now(zone)
-        mailing = MailingSettings.objects.filter(date_and_time_lte=current_datetime).\
-            filter(status_in=[MailingSettings.StatusMailingSettings.CREATED])
+        mailing = MailingSettings.objects.filter(
+            date_and_time_lte=current_datetime
+        ).filter(status_in=[MailingSettings.StatusMailingSettings.CREATED])
 
         for mailing in mailing:
-            send_mail(
-                subject=Message.objects.get(id=mailing.id).title,
-                message=Message.objects.get(id=mailing.id).body,
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[client.email for client in mailing.client.all()],
-            )
+            try:
+                send_mail(
+                    subject=Message.objects.get(id=mailing.id).title,
+                    message=Message.objects.get(id=mailing.id).body,
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[client.email for client in mailing.client.all()],
+                )
+                if (
+                    mailing.period == MailingSettings.PeriodMailingSettings.ONE_DAY
+                    and current_datetime.day >= 1
+                ):
+                    mailing.date_and_time = F("date_and_time") + timedelta(days=1)
+                    mailing.status = MailingSettings.StatusMailingSettings.STARTED
+                elif (
+                    mailing.period == MailingSettings.PeriodMailingSettings.ONE_WEEK
+                    and current_datetime.day >= 7
+                ):
+                    mailing.date_and_time = F("date_and_time") + timedelta(days=7)
+                    mailing.status = MailingSettings.StatusMailingSettings.STARTED
+                elif (
+                    mailing.period == MailingSettings.PeriodMailingSettings.ONE_MONTH
+                    and current_datetime.day >= 30
+                ):
+                    mailing.date_and_time = F("date_and_time") + timedelta(days=30)
+                    mailing.status = MailingSettings.StatusMailingSettings.STARTED
+                mailing.save()
+                status = True
+                server_response = "успешно"
+            except smtplib.SMTPResponseException as e:
+                status = False
+                server_response = str(e)
+            finally:
+                Logs.objects.create(
+                    mailing=mailing,
+                    status=status,
+                    server_response=server_response,
+                )
 
     def handle(self, *args, **options) -> None:
         """Запускает APScheduler."""
