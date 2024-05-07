@@ -22,8 +22,8 @@ class Command(BaseCommand):
         zone = pytz.timezone(settings.TIME_ZONE)
         current_datetime = datetime.now(zone)
         mailing = MailingSettings.objects.filter(
-            date_and_time_lte=current_datetime
-        ).filter(status_in=[MailingSettings.StatusMailingSettings.CREATED])
+            date_and_time__lte=current_datetime
+        ).filter(status__in=[MailingSettings.StatusMailingSettings.CREATED])
 
         for mailing in mailing:
             try:
