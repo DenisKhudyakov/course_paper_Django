@@ -159,3 +159,7 @@ APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+AUTH_USER_MODEL = "users.User"
+LOGIN_REDIRECT_URL = "/"  # URL to redirect to after login
+LOGOUT_REDIRECT_URL = "/"  # URL to redirect to after logout
