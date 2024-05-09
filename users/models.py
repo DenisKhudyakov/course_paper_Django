@@ -11,7 +11,7 @@ class User(AbstractUser):
     )  # email
     first_name = models.CharField(max_length=30, verbose_name="Имя")
     last_name = models.CharField(max_length=30, verbose_name="Фамилия")
-    telephone = models.CharField(max_length=20, null=True, blank=True)  # телефон
+    telephone = models.CharField(max_length=20, default="Integer", unique=True, verbose_name="Телефон", null=True, blank=True)   # телефон
 
     token = models.CharField(max_length=255, null=True, blank=True)
 
