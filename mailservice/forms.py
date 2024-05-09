@@ -27,6 +27,10 @@ class MessageForm(forms.ModelForm):
     class Meta:
         model = Message
         fields = "__all__"
+        widgets = {
+            "subject": forms.TextInput(attrs={"class": "form-control"}),
+            "body": forms.Textarea(attrs={"class": "form-control"}),
+        }
 
 
 class MailingSettingsForm(StyleMixinForm, forms.ModelForm):

@@ -35,6 +35,8 @@ class MailingSettings(models.Model):
         CREATED = "Создана", _("Создана")
         COMPLETED = "Завершена", _("Завершена")
 
+    create_date = models.DateTimeField(default=timezone.now, verbose_name="дата создания рассылки") # создание рассылки
+
     date_and_time = models.DateField(
         default=timezone.now, verbose_name="дата и время первой рассылки"
     )
@@ -95,3 +97,4 @@ class Logs(models.Model):
     class Meta:
         verbose_name = "лог"
         verbose_name_plural = "логи"
+
