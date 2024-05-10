@@ -1,4 +1,5 @@
 {% extends 'mailservice/base.html' %}
+{%load crispy_forms_tags %}
 
 {% block content %}
     <div class="col-12">
@@ -8,10 +9,13 @@
                     <div class="card-body">
                         <form method="post">
                             {% csrf_token %}
-                            {{ form.as_p }}
+                            {{ form|crispy }}
                             <button type="submit" class="btn btn-success">
                                 Войти
                             </button>
+                            <a href="{% url 'mailservice:homepage' %}" class="btn btn-warning">
+                                Отмена
+                            </a>
                         </form>
                     </div>
                 </div>

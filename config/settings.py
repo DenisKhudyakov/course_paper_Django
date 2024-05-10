@@ -50,7 +50,6 @@ INSTALLED_APPS = [
     "blog",
     "users",
 ]
-SITE_ID = 1  # The id of the site.
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -62,7 +61,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "config.urls"
-
+SITE_ID = 1 # django.contrib.sites.models.Site.objects.get_current().id
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -161,6 +160,6 @@ APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
-AUTH_USER_MODEL = "users.User"
+AUTH_USER_MODEL = "users.CustomUser"
 LOGIN_REDIRECT_URL = "/"  # URL to redirect to after login
 LOGOUT_REDIRECT_URL = "/"  # URL to redirect to after logout

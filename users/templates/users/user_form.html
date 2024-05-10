@@ -16,6 +16,9 @@
                                     Зарегистрироваться
                                 {% endif %}
                             </button>
+                            <a href="{% url 'mailservice:homepage' %}" class="btn btn-warning">
+                                Отмена
+                            </a>
                         </form>
                     </div>
                 {% if user.is_authenticated %}

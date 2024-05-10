@@ -12,12 +12,6 @@ class StyleMixinForm:
             field.widget.attrs["class"] = "form-control"
             field.help_text = f"Введите {field_name}"
 
-    class Meta:
-        widgets = {
-            "subject": forms.TextInput(attrs={"class": "form-control"}),
-            "body": forms.Textarea(attrs={"class": "form-control"}),
-        }
-
 
 class ClientForm(forms.ModelForm):
     """Класс формы клиента"""
@@ -45,4 +39,3 @@ class MailingSettingsForm(StyleMixinForm, forms.ModelForm):
     class Meta:
         model = MailingSettings
         fields = "__all__"
-

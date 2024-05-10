@@ -1,9 +1,11 @@
 from django.core.management import BaseCommand
 
+from users.models import CustomUser
+
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        user = User.objects.create_user(
+        user = CustomUser.objects.create_user(
             username="admin",
             email="<EMAIL>",
             password="<PASSWORD>",
