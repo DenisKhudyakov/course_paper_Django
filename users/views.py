@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views.generic import CreateView, TemplateView, View
-
+from django.contrib.auth.views import LogoutView as BaseLogoutView
 from config.settings import EMAIL_HOST_USER
 from users.forms import UserRegisterForm
 from users.models import CustomUser
@@ -18,6 +18,9 @@ from users.models import CustomUser
 class UserLogin(LoginView):
     template_name = 'users/login.html'
 
+
+class LogoutView(LoginRequiredMixin, BaseLogoutView):
+    pass
 
 class UserCreateView(CreateView):
     form_class = UserRegisterForm

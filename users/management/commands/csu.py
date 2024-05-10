@@ -5,12 +5,11 @@ from users.models import CustomUser
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        user = CustomUser.objects.create_user(
-            username="admin",
-            email="<EMAIL>",
-            password="<PASSWORD>",
-            is_staff=True,
-            is_superuser=True,
+        user = CustomUser.objects.create(
+            email="admin@admin.ru",
         )
-        user.set_password("<PASSWORD>")
+        user.set_password("qwe123")
+        user.is_superuser = True
+        user.is_staff = True
+        user.is_active = True
         user.save()
