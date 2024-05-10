@@ -3,7 +3,7 @@ from django.urls import path
 
 from users.apps import UsersConfig
 from users.views import (UserCreateView, UserLogin, UserUpdateView,
-                         VerificationFailedView, activate)
+                         VerificationFailedView, activate, generate_new_password)
 
 app_name = UsersConfig.name
 
@@ -18,4 +18,5 @@ urlpatterns = [
         name="email_confirmation_failed",
     ),
     path("profile/", UserUpdateView.as_view(), name="profile"),
+    path('profile/genpassword/', generate_new_password, name='generate_new_password'),
 ]
