@@ -2,14 +2,14 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 from mailservice.forms import StyleMixinForm
-from users.models import CustomUser
+from users.models import User
 
 
 class UserRegisterForm(StyleMixinForm, UserCreationForm):
     """Класс формы регистрации пользователя"""
 
     class Meta:
-        model = CustomUser
+        model = User
         fields = ("email", "first_name", "last_name", "telephone", "password1", "password2")
 
 
@@ -17,7 +17,7 @@ class UserForm(StyleMixinForm, UserChangeForm):
     """Класс формы пользователя"""
 
     class Meta:
-        model = CustomUser
+        model = User
         fields = (
             "email",
             "first_name",

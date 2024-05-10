@@ -11,7 +11,7 @@ from django.views.generic import CreateView, TemplateView, View
 from django.contrib.auth.views import LogoutView as BaseLogoutView
 from config.settings import EMAIL_HOST_USER
 from users.forms import UserRegisterForm
-from users.models import CustomUser
+from users.models import User
 
 
 class UserLogin(LoginView):
@@ -60,7 +60,7 @@ def activation(request, uidb64, token):
     """Подтверждение почты пользователя"""
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
-        user = CustomUser.objects.get(pk=uid)
+        user = User.objects.get(pk=uid)
     except (TypeError, ValueError, OverflowError):
         user = None
     if user is not None and default_token_generator.check_token(user, token):
