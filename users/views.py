@@ -1,12 +1,11 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import LoginView
-from django.contrib.sites.models import Site
 from django.core.mail import send_mail
 from django.shortcuts import redirect
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
-from django.utils.encoding import force_bytes
+from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views.generic import CreateView, TemplateView, View
 from django.contrib.auth.views import LogoutView as BaseLogoutView
@@ -21,6 +20,7 @@ class UserLogin(LoginView):
 
 class LogoutView(LoginRequiredMixin, BaseLogoutView):
     pass
+
 
 class UserCreateView(CreateView):
     form_class = UserRegisterForm
@@ -39,16 +39,15 @@ class UserCreateView(CreateView):
         user.save()
         # Функционал для отправки письма на почту
         token = default_token_generator.make_token(user)  # создание токена
-        uid = urlsafe_base64_encode(force_bytes(user.pk))  # кодирование id пользователя
+        user.token = token
+        user.save()
+        uid = urlsafe_base64_encode(force_str(user.pk).encode())  # кодирование id пользователя
         activation_url = reverse_lazy(
-            "confirm_email", kwargs={"uidb64": uid, "token": token}
+            "users:activation", kwargs={"uidb64": uid, "token": token}
         )
-        current_site = Site.objects.get_current().domain
+        activation_url = self.request.build_absolute_uri(activation_url)
         send_mail(
-            message=f"""
-            Подтвердите свой адрес электронной почты:
-            Пожалуйста, перейдите по ссылке: http://{current_site}{activation_url}
-            """,  # сообщение
+            message=render_to_string("users/confirm_email.html", {"activation_url": activation_url}),  # сообщение
             from_email=EMAIL_HOST_USER,  # отправитель
             recipient_list=[user.email],  # получатель
             fail_silently=False,  # не пытаемся отправить письмо
@@ -57,20 +56,16 @@ class UserCreateView(CreateView):
         return super().form_valid(form)
 
 
-User = get_user_model()
-
-
-class UserConfirmEmailView(LoginRequiredMixin, View):
+def activation(request, uidb64, token):
     """Подтверждение почты пользователя"""
-    def get(self, request, uidb64, token):
-        try:
-            uid = urlsafe_base64_decode(uidb64)
-            user = CustomUser.objects.get(pk=uid)
-        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
-            user = None
-        if user is not None and default_token_generator.check_token(user, token):
-            user.is_active = True
-            user.save()
-            return redirect("users:login")
-        else:
-            return redirect("email_confirmation_failed")
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = CustomUser.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError):
+        user = None
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        return redirect("users:login")
+    else:
+        return redirect("users:email_confirmation_failed")

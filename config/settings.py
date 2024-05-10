@@ -36,7 +36,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    "django.contrib.sites",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -61,7 +60,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "config.urls"
-SITE_ID = 1 # django.contrib.sites.models.Site.objects.get_current().id
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
