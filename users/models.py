@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-NULLABLE = {'null': True, 'blank': True}
+NULLABLE = {"null": True, "blank": True}
 
 
 class User(AbstractUser):
@@ -13,7 +13,9 @@ class User(AbstractUser):
     )  # email
     first_name = models.CharField(max_length=30, verbose_name="Имя", **NULLABLE)
     last_name = models.CharField(max_length=30, verbose_name="Фамилия", **NULLABLE)
-    telephone = models.CharField(max_length=20, unique=True, verbose_name="Телефон", **NULLABLE)   # телефон
+    telephone = models.CharField(
+        max_length=20, unique=True, verbose_name="Телефон", **NULLABLE
+    )  # телефон
 
     token = models.CharField(max_length=255, **NULLABLE)
 
@@ -29,4 +31,4 @@ class User(AbstractUser):
         )
 
     def __str__(self):
-        return f'{self.email}, {self.first_name}, {self.last_name}'
+        return f"{self.email}, {self.first_name}, {self.last_name}"

@@ -1,4 +1,6 @@
-from django.contrib.auth.forms import UserChangeForm
+import random
+
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import LoginView
@@ -7,20 +9,21 @@ from django.shortcuts import redirect
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.encoding import force_str
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.generic import CreateView, TemplateView, UpdateView
+
 from config.settings import EMAIL_HOST_USER
-from users.forms import UserRegisterForm, UserForm
+from users.forms import UserForm, UserRegisterForm
 from users.models import User
 
 
 class UserLogin(LoginView):
-    template_name = 'users/login.html'
+    template_name = "users/login.html"
 
 
 class UserCreateView(CreateView):
     form_class = UserRegisterForm
-    template_name = ("users/user_form.html")
+    template_name = "users/user_form.html"
     success_url = reverse_lazy("users:login")
     success_message = "Вы успешно зарегистрировались на сайте"
 
@@ -37,14 +40,18 @@ class UserCreateView(CreateView):
         token = default_token_generator.make_token(user)  # создание токена
         user.token = token
         user.save()
-        uid = urlsafe_base64_encode(force_str(user.pk).encode())  # кодирование id пользователя
+        uid = urlsafe_base64_encode(
+            force_str(user.pk).encode()
+        )  # кодирование id пользователя
         activation_url = reverse_lazy(
             "users:activate", kwargs={"uidb64": uid, "token": token}
         )
         activation_url = self.request.build_absolute_uri(activation_url)
         send_mail(
-            subject="Подтверждение аккаунта", # заголовок
-            message=render_to_string("users/confirm_email.html", {"activation_url": activation_url}),  # сообщение
+            subject="Подтверждение аккаунта",  # заголовок
+            message=render_to_string(
+                "users/confirm_email.html", {"activation_url": activation_url}
+            ),  # сообщение
             from_email=EMAIL_HOST_USER,  # отправитель
             recipient_list=[user.email],  # получатель
             fail_silently=False,  # не пытаемся отправить письмо
@@ -70,14 +77,30 @@ def activate(request, uidb64, token):
 
 class VerificationFailedView(TemplateView):
     """Класс не успешной верификации"""
-    template_name = "users/verification_failed.html" # шаблон
+
+    template_name = "users/verification_failed.html"  # шаблон
 
 
 class UserUpdateView(UpdateView):
     """обновление данных пользователя"""
+
     model = User
-    form_class = UserForm # форма для обновления данных
-    success_url = reverse_lazy('mailservice:homepage')
+    form_class = UserForm  # форма для обновления данных
+    success_url = reverse_lazy("mailservice:homepage")
 
     def get_object(self, queryset=None):
-        return self.request.user # получаем объект пользователя
+        return self.request.user  # получаем объект пользователя
+
+
+def generate_new_password(request):
+    new_password = "".join([str(random.randint(0, 9)) for _ in range(16)])
+    new_password = make_password(new_password)
+    send_mail(
+        subject="Обновленный пароль",
+        message=f"Используй новый пароль {new_password}",
+        from_email=EMAIL_HOST_USER,
+        recipient_list=[request.user.email],
+    )
+    request.user.set_password(new_password)
+    request.user.save()
+    return reverse_lazy("users:login")

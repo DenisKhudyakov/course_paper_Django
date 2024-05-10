@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 
 from mailservice.forms import StyleMixinForm
 from users.models import User
@@ -10,7 +10,14 @@ class UserRegisterForm(StyleMixinForm, UserCreationForm):
 
     class Meta:
         model = User
-        fields = ("email", "first_name", "last_name", "telephone", "password1", "password2")
+        fields = (
+            "email",
+            "first_name",
+            "last_name",
+            "telephone",
+            "password1",
+            "password2",
+        )
 
 
 class UserForm(StyleMixinForm, UserChangeForm):
@@ -23,8 +30,8 @@ class UserForm(StyleMixinForm, UserChangeForm):
             "first_name",
             "last_name",
             "telephone",
-            'is_active',
-        ) # 'is_staff', 'is_superuser')
+            "is_active",
+        )  # 'is_staff', 'is_superuser')
 
     def __init__(self, *args, **kwargs):
         super.__init__(*args, **kwargs)

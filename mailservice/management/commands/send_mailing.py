@@ -8,7 +8,7 @@ from django.core.management import BaseCommand
 from django.db.models import F
 
 from config import settings
-from mailservice.models import MailingSettings, Message, Logs
+from mailservice.models import Logs, MailingSettings, Message
 
 
 class Command(BaseCommand):
