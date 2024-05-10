@@ -1,3 +1,4 @@
+from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import LoginView
@@ -7,19 +8,14 @@ from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.views.generic import CreateView, TemplateView, View
-from django.contrib.auth.views import LogoutView as BaseLogoutView
+from django.views.generic import CreateView, TemplateView, UpdateView
 from config.settings import EMAIL_HOST_USER
-from users.forms import UserRegisterForm
+from users.forms import UserRegisterForm, UserForm
 from users.models import User
 
 
 class UserLogin(LoginView):
     template_name = 'users/login.html'
-
-
-class LogoutView(BaseLogoutView):
-    pass
 
 
 class UserCreateView(CreateView):
@@ -43,10 +39,11 @@ class UserCreateView(CreateView):
         user.save()
         uid = urlsafe_base64_encode(force_str(user.pk).encode())  # кодирование id пользователя
         activation_url = reverse_lazy(
-            "users:activation", kwargs={"uidb64": uid, "token": token}
+            "users:activate", kwargs={"uidb64": uid, "token": token}
         )
         activation_url = self.request.build_absolute_uri(activation_url)
         send_mail(
+            subject="Подтверждение аккаунта", # заголовок
             message=render_to_string("users/confirm_email.html", {"activation_url": activation_url}),  # сообщение
             from_email=EMAIL_HOST_USER,  # отправитель
             recipient_list=[user.email],  # получатель
@@ -56,16 +53,31 @@ class UserCreateView(CreateView):
         return super().form_valid(form)
 
 
-def activation(request, uidb64, token):
+def activate(request, uidb64, token):
     """Подтверждение почты пользователя"""
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
     except (TypeError, ValueError, OverflowError):
         user = None
-    if user is not None and default_token_generator.check_token(user, token):
+    if user and user.token == token:
         user.is_active = True
         user.save()
         return redirect("users:login")
     else:
         return redirect("users:email_confirmation_failed")
+
+
+class VerificationFailedView(TemplateView):
+    """Класс не успешной верификации"""
+    template_name = "users/verification_failed.html" # шаблон
+
+
+class UserUpdateView(UpdateView):
+    """обновление данных пользователя"""
+    model = User
+    form_class = UserForm # форма для обновления данных
+    success_url = reverse_lazy('mailservice:homepage')
+
+    def get_object(self, queryset=None):
+        return self.request.user # получаем объект пользователя
