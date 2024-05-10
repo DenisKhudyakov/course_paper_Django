@@ -18,7 +18,7 @@ class UserLogin(LoginView):
     template_name = 'users/login.html'
 
 
-class LogoutView(LoginRequiredMixin, BaseLogoutView):
+class LogoutView(BaseLogoutView):
     pass
 
 
