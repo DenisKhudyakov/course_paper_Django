@@ -2,22 +2,24 @@ from django.shortcuts import render
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.urls import reverse_lazy, reverse
 from django.views.generic import DetailView, ListView, CreateView, UpdateView, DeleteView
+
+from blog.forms import BlogForm
 from blog.models import Blog
 
 
 class BlogCreateView(PermissionRequiredMixin, CreateView):
     """Класс создания статьи блога"""
-    model = Blog
+    form_class = BlogForm
+    template_name = 'blog/blog_form.html'
     permission_required = 'blog.add_blog'
-    fields = ('title', 'content', 'preview', 'is_published',)
     success_url = reverse_lazy('blog:list')
 
 
 class BlogUpdateView(PermissionRequiredMixin, UpdateView):
     """Класс редактирования статьи блога"""
+    form_class = BlogForm
+    template_name = 'blog/blog_form.html'
     permission_required = 'blog.change_blog'
-    model = Blog
-    fields = ('title', 'content', 'preview', 'is_published',)
 
     def get_success_url(self):
         return reverse('blog:blogs', args=[self.kwargs.get('pk')])
