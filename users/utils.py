@@ -9,3 +9,4 @@ class UserRequiredMixin:
             raise PermissionDenied
         return self.object
 
+

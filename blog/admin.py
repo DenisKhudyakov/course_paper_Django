@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from blog.models import Post
+from blog.models import Blog
 
 
-@admin.register(Post)
+@admin.register(Blog)
 class PostAdmin(admin.ModelAdmin):
     list_display = ("title", "content", "image")

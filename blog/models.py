@@ -3,7 +3,7 @@ from django.db import models
 NULLABLE = {"null": True, "blank": True}
 
 
-class Post(models.Model):
+class Blog(models.Model):
     """Модель блога"""
 
     title = models.CharField(max_length=200, verbose_name="Заголовок")
@@ -17,6 +17,7 @@ class Post(models.Model):
     data_create = models.DateTimeField(
         auto_now_add=True, verbose_name="Дата публикации"
     )
+    is_published = models.BooleanField(verbose_name='признак публикации', default=True)
 
     class Meta:
         verbose_name = "Пост"

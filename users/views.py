@@ -1,6 +1,6 @@
 import random
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import LoginView
 from django.core.mail import send_mail
@@ -91,8 +91,9 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
         return self.request.user
 
 
-class UserListView(ListView):
+class UserListView(PermissionRequiredMixin, ListView):
     """Список всех пользователей, кроме самого себя и админа"""
+    permission_required = "view_all_user"
     model = User
 
     def get_queryset(self):
