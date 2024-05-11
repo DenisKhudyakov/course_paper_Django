@@ -34,6 +34,6 @@ class UserForm(StyleMixinForm, UserChangeForm):
         )  # 'is_staff', 'is_superuser')
 
     def __init__(self, *args, **kwargs):
-        super.__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields["password"].widget = forms.HiddenInput()

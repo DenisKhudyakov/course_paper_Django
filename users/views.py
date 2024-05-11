@@ -1,5 +1,4 @@
 import random
-
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.tokens import default_token_generator
@@ -10,7 +9,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.views.generic import CreateView, TemplateView, UpdateView
+from django.views.generic import CreateView, TemplateView, UpdateView, ListView
 
 from config.settings import EMAIL_HOST_USER
 from users.forms import UserForm, UserRegisterForm
@@ -81,7 +80,7 @@ class VerificationFailedView(TemplateView):
     template_name = "users/verification_failed.html"  # шаблон
 
 
-class UserUpdateView(UpdateView):
+class UserUpdateView(LoginRequiredMixin, UpdateView):
     """обновление данных пользователя"""
 
     model = User
@@ -89,7 +88,15 @@ class UserUpdateView(UpdateView):
     success_url = reverse_lazy("mailservice:homepage")
 
     def get_object(self, queryset=None):
-        return self.request.user  # получаем объект пользователя
+        return self.request.user
+
+
+class UserListView(ListView):
+    """Список всех пользователей, кроме самого себя и админа"""
+    model = User
+
+    def get_queryset(self):
+        return super().get_queryset().exclude(pk=self.request.user.pk).exclude(is_superuser=True)
 
 
 def generate_new_password(request):
@@ -103,4 +110,4 @@ def generate_new_password(request):
     )
     request.user.set_password(new_password)
     request.user.save()
-    return reverse_lazy("users:login")
+    return redirect(reverse_lazy("users:login")) # перенаправление на страницу логина

@@ -10,7 +10,7 @@ from mailservice.views import (ClientCreateView, ClientDeleteView,
                                MailingSettingsListView,
                                MailingSettingsUpdateView, MessageCreateView,
                                MessageDeleteView, MessageDetailView,
-                               MessageListView, MessageUpdateView)
+                               MessageListView, MessageUpdateView, LogsListView)
 
 app_name = MailserviceConfig.name
 
@@ -49,4 +49,5 @@ urlpatterns = [
         MailingSettingsDeleteView.as_view(),
         name="setting-delete",
     ),
+    path("logs/", LogsListView.as_view(), name="logs"),
 ]
