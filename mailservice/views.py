@@ -1,29 +1,31 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   TemplateView, UpdateView)
 
 from mailservice.forms import ClientForm, MailingSettingsForm, MessageForm
-from mailservice.models import Client, MailingSettings, Message
+from mailservice.models import Client, MailingSettings, Message, Logs
+from users.utils import UserRequiredMixin
 
 
 class HomePageView(TemplateView):
     template_name = "mailservice/base.html"
 
 
-class ClientListView(ListView):
+class ClientListView(LoginRequiredMixin, ListView):
     """Список клиентов"""
 
     model = Client
 
 
-class ClientDetailView(DetailView):
+class ClientDetailView(LoginRequiredMixin, DetailView):
     """Просмотр одного клиента"""
 
     model = Client
 
 
-class ClientCreateView(CreateView):
+class ClientCreateView(LoginRequiredMixin, UserRequiredMixin, CreateView):
     """Класс создания клиента"""
 
     model = Client
@@ -33,7 +35,7 @@ class ClientCreateView(CreateView):
         return reverse("mailservice:clients")
 
 
-class ClientUpdateView(UpdateView):
+class ClientUpdateView(LoginRequiredMixin, UpdateView):
     """Класс редактирования клиента"""
 
     model = Client
@@ -43,26 +45,26 @@ class ClientUpdateView(UpdateView):
         return reverse("mailservice:clients")
 
 
-class ClientDeleteView(DeleteView):
+class ClientDeleteView(LoginRequiredMixin, UserRequiredMixin, DeleteView):
     """Класс удаления клиента"""
 
     model = Client
     success_url = "mailservice:clients"
 
 
-class MailingSettingsListView(ListView):
+class MailingSettingsListView(LoginRequiredMixin, ListView):
     """Класс отображения рассылок"""
 
     model = MailingSettings
 
 
-class MailingSettingsDetailView(DetailView):
+class MailingSettingsDetailView(LoginRequiredMixin, DetailView):
     """Класс отображения отдельной рассылки"""
 
     model = MailingSettings
 
 
-class MailingSettingsCreateView(CreateView):
+class MailingSettingsCreateView(LoginRequiredMixin, UserRequiredMixin, CreateView):
     """Класс создания рассылки"""
 
     model = MailingSettings
@@ -70,7 +72,7 @@ class MailingSettingsCreateView(CreateView):
     success_url = reverse_lazy("mailservice:settings")
 
 
-class MailingSettingsUpdateView(UpdateView):
+class MailingSettingsUpdateView(LoginRequiredMixin, UpdateView):
     """Класс обновления рассылки"""
 
     model = MailingSettings
@@ -78,7 +80,7 @@ class MailingSettingsUpdateView(UpdateView):
     success_url = reverse_lazy("mailservice:settings")
 
 
-class MailingSettingsDeleteView(DeleteView):
+class MailingSettingsDeleteView(LoginRequiredMixin, UserRequiredMixin, DeleteView):
     """Класс удаления рассылки"""
 
     model = MailingSettings
@@ -97,7 +99,7 @@ class MessageDetailView(DetailView):
     model = Message
 
 
-class MessageCreateView(CreateView):
+class MessageCreateView(LoginRequiredMixin, CreateView):
     """Класс создания сообщения"""
 
     model = Message
@@ -105,7 +107,7 @@ class MessageCreateView(CreateView):
     success_url = reverse_lazy("mailservice:messages")
 
 
-class MessageUpdateView(UpdateView):
+class MessageUpdateView(LoginRequiredMixin, UpdateView):
     """Класс редактирования сообщения"""
 
     model = Message
@@ -113,8 +115,26 @@ class MessageUpdateView(UpdateView):
     success_url = reverse_lazy("mailservice:messages")
 
 
-class MessageDeleteView(DeleteView):
+class MessageDeleteView(LoginRequiredMixin, DeleteView):
     """Класс удаления сообщения"""
 
     model = Message
     success_url = reverse_lazy("mailservice:messages")
+
+
+class LogsCreateView(CreateView):
+    """Класс создания логов"""
+    model = Logs
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.user = self.request.user
+        self.object.save()
+        return super().form_valid(form)
+
+
+class LogsListView(LoginRequiredMixin, ListView):
+    """Класс отображения логов"""
+    model = Logs
+    def get_queryset(self):
+        return Logs.objects.filter(user=self.request.user)

@@ -2,6 +2,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from users.models import User
+
 NULLABLE = {"blank": True, "null": True}
 
 
@@ -11,6 +13,7 @@ class Client(models.Model):
     email = models.EmailField(max_length=150, unique=True, verbose_name="почта")
     name = models.CharField(max_length=100, verbose_name="ФИО")
     comments = models.TextField(verbose_name="комментарий", **NULLABLE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="владелец", null=True)
 
     def __str__(self):
         return f"{self.name}, {self.email}"
@@ -18,6 +21,19 @@ class Client(models.Model):
     class Meta:
         verbose_name = "клиент"
         verbose_name_plural = "клиенты"
+
+
+class Message(models.Model):
+
+    title = models.CharField(max_length=150, verbose_name="Заголовок")
+    body = models.TextField(verbose_name="Текс сообщения", **NULLABLE)
+
+    def __str__(self):
+        return f"{self.title}, {self.body[:50]}..."
+
+    class Meta:
+        verbose_name = "сообщение"
+        verbose_name_plural = "сообщения"
 
 
 class MailingSettings(models.Model):
@@ -51,6 +67,8 @@ class MailingSettings(models.Model):
         max_length=50, choices=StatusMailingSettings, verbose_name="статус"
     )
     client = models.ManyToManyField(Client, verbose_name="клиенты рассылки")
+    message = models.ForeignKey(Message, verbose_name="сообщение", on_delete=models.CASCADE, null=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="владелец рассылки", null=True)
 
     def __str__(self):
         return f"{self.date_and_time},{self.period}, {self.status}, {self.client}"
@@ -60,42 +78,30 @@ class MailingSettings(models.Model):
         verbose_name_plural = "настройки рассылки"
 
 
-class Message(models.Model):
-
-    title = models.CharField(max_length=150, verbose_name="Заголовок")
-    body = models.TextField(verbose_name="Текс сообщения", **NULLABLE)
-    mailing_settings = models.ForeignKey(
-        MailingSettings, on_delete=models.CASCADE, verbose_name="рассылка", **NULLABLE
-    )
-
-    def __str__(self):
-        return f"{self.title}, {self.body[:50]}..."
-
-    class Meta:
-        verbose_name = "сообщение"
-        verbose_name_plural = "сообщения"
-
-
 class Logs(models.Model):
     """Модель попытки рассылки, поля: дата и время последней рассылки, статус(успешно/не успешно)
     ответ почтового сервера, если он был
     """
+    TRY_STATUS_TO_SEND = [
+        ("success", "Успешно"),
+        ("fail", "Не успешно"),
+    ]
 
     date = models.DateField(
         verbose_name="дата и время последней рассылки", auto_now_add=True
     )
-    status = models.BooleanField(verbose_name="статус рассылки")
+    status = models.CharField(max_length=50, choices=TRY_STATUS_TO_SEND, verbose_name="статус")
     server_response = models.CharField(
         verbose_name="ответ почтового сервера", **NULLABLE
     )
-    client = models.ForeignKey(Client, verbose_name="клиент", on_delete=models.CASCADE)
     mailing_settings = models.ForeignKey(
         MailingSettings, verbose_name="настройка рассылки", on_delete=models.CASCADE
     )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, verbose_name="пользователь")    # пользователь
 
     def __str__(self):
-        return f"{self.date}, {self.status}"
+        return f"{self.mailing_settings}, {self.date}, {self.status}, {self.user}"
 
     class Meta:
-        verbose_name = "лог"
-        verbose_name_plural = "логи"
+        verbose_name = "попытка рассылки"
+        verbose_name_plural = "попытки рассылки"
