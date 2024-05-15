@@ -123,8 +123,8 @@ USE_I18N = True
 USE_TZ = True
 
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Static files (CSS, JavaScript, Images)
 # https://docgit s.djangoproject.com/en/5.0/howto/static-files/
@@ -165,7 +165,7 @@ AUTH_USER_MODEL = "users.User"
 LOGIN_REDIRECT_URL = "/"  # URL to redirect to after login
 LOGOUT_REDIRECT_URL = "/"  # URL to redirect to after logout
 
-CACHE_ENABLED = True # Enable caching in production
+CACHE_ENABLED = True  # Enable caching in production
 if CACHE_ENABLED:
     CACHES = {
         "default": {

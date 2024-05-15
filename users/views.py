@@ -1,6 +1,8 @@
 import random
+
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import (LoginRequiredMixin,
+                                        PermissionRequiredMixin)
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import LoginView
 from django.core.mail import send_mail
@@ -9,7 +11,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.views.generic import CreateView, TemplateView, UpdateView, ListView
+from django.views.generic import CreateView, ListView, TemplateView, UpdateView
 
 from config.settings import EMAIL_HOST_USER
 from users.forms import UserForm, UserRegisterForm
@@ -93,11 +95,17 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 
 class UserListView(PermissionRequiredMixin, ListView):
     """Список всех пользователей, кроме самого себя и админа"""
+
     permission_required = "view_all_user"
     model = User
 
     def get_queryset(self):
-        return super().get_queryset().exclude(pk=self.request.user.pk).exclude(is_superuser=True)
+        return (
+            super()
+            .get_queryset()
+            .exclude(pk=self.request.user.pk)
+            .exclude(is_superuser=True)
+        )
 
 
 def generate_new_password(request):
@@ -111,4 +119,4 @@ def generate_new_password(request):
     )
     request.user.set_password(new_password)
     request.user.save()
-    return redirect(reverse_lazy("users:login")) # перенаправление на страницу логина
+    return redirect(reverse_lazy("users:login"))  # перенаправление на страницу логина

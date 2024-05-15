@@ -7,7 +7,7 @@ from blog.models import Blog
 def get_blog_cache():
     """Функция кеширования блога"""
     if settings.CACHE_ENABLED:
-        key = 'blog_list'
+        key = "blog_list"
         blog_list = cache.get(key)
         if blog_list is None:
             blog_list = Blog.objects.filter(is_published=True)

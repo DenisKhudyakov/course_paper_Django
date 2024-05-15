@@ -3,14 +3,14 @@ from django.urls import path
 from mailservice.apps import MailserviceConfig
 from mailservice.views import (ClientCreateView, ClientDeleteView,
                                ClientDetailView, ClientListView,
-                               ClientUpdateView, HomePageView,
+                               ClientUpdateView, HomePageView, LogsListView,
                                MailingSettingsCreateView,
                                MailingSettingsDeleteView,
                                MailingSettingsDetailView,
                                MailingSettingsListView,
                                MailingSettingsUpdateView, MessageCreateView,
                                MessageDeleteView, MessageDetailView,
-                               MessageListView, MessageUpdateView, LogsListView)
+                               MessageListView, MessageUpdateView)
 
 app_name = MailserviceConfig.name
 

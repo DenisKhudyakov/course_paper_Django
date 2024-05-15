@@ -17,7 +17,7 @@ class Blog(models.Model):
     data_create = models.DateTimeField(
         auto_now_add=True, verbose_name="Дата публикации"
     )
-    is_published = models.BooleanField(verbose_name='признак публикации', default=True)
+    is_published = models.BooleanField(verbose_name="признак публикации", default=True)
 
     class Meta:
         verbose_name = "Пост"

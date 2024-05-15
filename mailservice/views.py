@@ -6,7 +6,7 @@ from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   TemplateView, UpdateView)
 
 from mailservice.forms import ClientForm, MailingSettingsForm, MessageForm
-from mailservice.models import Client, MailingSettings, Message, Logs
+from mailservice.models import Client, Logs, MailingSettings, Message
 from users.utils import UserRequiredMixin
 
 
@@ -72,7 +72,7 @@ class MailingSettingsListView(LoginRequiredMixin, ListView):
     model = MailingSettings
 
     def get_queryset(self):
-        if self.request.user.has_perm('mailing.view_all_mailings'):
+        if self.request.user.has_perm("mailing.view_all_mailings"):
             mailing_list = super().get_queryset()
         else:
             mailing_list = super().get_queryset().filter(owner_id=self.request.user)
@@ -110,7 +110,7 @@ class MailingSettingsUpdateView(LoginRequiredMixin, UpdateView):
         if self.request.user == self.object.owner or self.request.user.is_superuser:
             return MailingSettingsForm
         else:
-            raise Http404('У вас нет прав на редактирование рассылок')
+            raise Http404("У вас нет прав на редактирование рассылок")
 
 
 class MailingSettingsDeleteView(LoginRequiredMixin, UserRequiredMixin, DeleteView):
@@ -169,6 +169,7 @@ class MessageDeleteView(LoginRequiredMixin, DeleteView):
 
 class LogsCreateView(CreateView):
     """Класс создания логов"""
+
     model = Logs
 
     def form_valid(self, form):
@@ -180,6 +181,8 @@ class LogsCreateView(CreateView):
 
 class LogsListView(LoginRequiredMixin, ListView):
     """Класс отображения логов"""
+
     model = Logs
+
     def get_queryset(self):
         return Logs.objects.filter(user=self.request.user)
