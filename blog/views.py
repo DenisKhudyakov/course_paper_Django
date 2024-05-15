@@ -5,6 +5,7 @@ from django.views.generic import DetailView, ListView, CreateView, UpdateView, D
 
 from blog.forms import BlogForm
 from blog.models import Blog
+from blog.services import get_blog_cache
 
 
 class BlogCreateView(PermissionRequiredMixin, CreateView):
@@ -37,9 +38,7 @@ class BlogListView(ListView):
     model = Blog
 
     def get_queryset(self, *args, **kwargs):
-        queryset = super().get_queryset(*args, **kwargs)
-        queryset = queryset.filter(is_published=True)
-        return queryset
+        return get_blog_cache()
 
 
 class BlogDetailView(DetailView):

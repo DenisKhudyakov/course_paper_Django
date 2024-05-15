@@ -164,3 +164,12 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 AUTH_USER_MODEL = "users.User"
 LOGIN_REDIRECT_URL = "/"  # URL to redirect to after login
 LOGOUT_REDIRECT_URL = "/"  # URL to redirect to after logout
+
+CACHE_ENABLED = True # Enable caching in production
+if CACHE_ENABLED:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379",
+        }
+    }

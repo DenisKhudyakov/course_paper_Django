@@ -17,6 +17,7 @@ crispy-bootstrap4 = "^2024.1"
 pillow = "^10.3.0"
 ipython = "^8.24.0"
 python-slugify = "^8.0.4"
+redis = "^5.0.4"
 
 
 [tool.poetry.group.lint.dependencies]
