@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import Http404
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
@@ -18,8 +19,14 @@ class ClientListView(LoginRequiredMixin, ListView):
 
     model = Client
 
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Client.objects.all()
+        else:
+            return Client.objects.filter(owner=self.request.user)
 
-class ClientDetailView(LoginRequiredMixin, DetailView):
+
+class ClientDetailView(LoginRequiredMixin, UserRequiredMixin, DetailView):
     """Просмотр одного клиента"""
 
     model = Client
@@ -33,6 +40,13 @@ class ClientCreateView(LoginRequiredMixin, UserRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse("mailservice:clients")
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.owner = self.request.user
+        self.object.save()
+
+        return super().form_valid(form)
 
 
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
@@ -57,8 +71,15 @@ class MailingSettingsListView(LoginRequiredMixin, ListView):
 
     model = MailingSettings
 
+    def get_queryset(self):
+        if self.request.user.has_perm('mailing.view_all_mailings'):
+            mailing_list = super().get_queryset()
+        else:
+            mailing_list = super().get_queryset().filter(owner_id=self.request.user)
+        return mailing_list
 
-class MailingSettingsDetailView(LoginRequiredMixin, DetailView):
+
+class MailingSettingsDetailView(LoginRequiredMixin, UserRequiredMixin, DetailView):
     """Класс отображения отдельной рассылки"""
 
     model = MailingSettings
@@ -71,6 +92,12 @@ class MailingSettingsCreateView(LoginRequiredMixin, UserRequiredMixin, CreateVie
     form_class = MailingSettingsForm
     success_url = reverse_lazy("mailservice:settings")
 
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.owner = self.request.user
+        self.object.save()
+        return super().form_valid(form)
+
 
 class MailingSettingsUpdateView(LoginRequiredMixin, UpdateView):
     """Класс обновления рассылки"""
@@ -78,6 +105,12 @@ class MailingSettingsUpdateView(LoginRequiredMixin, UpdateView):
     model = MailingSettings
     form_class = MailingSettingsForm
     success_url = reverse_lazy("mailservice:settings")
+
+    def get_form_class(self):
+        if self.request.user == self.object.owner or self.request.user.is_superuser:
+            return MailingSettingsForm
+        else:
+            raise Http404('У вас нет прав на редактирование рассылок')
 
 
 class MailingSettingsDeleteView(LoginRequiredMixin, UserRequiredMixin, DeleteView):
@@ -92,6 +125,12 @@ class MessageListView(ListView):
 
     model = Message
 
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Client.objects.all()
+        else:
+            return Client.objects.filter(owner=self.request.user)
+
 
 class MessageDetailView(DetailView):
     """Класс отображения отдельного сообщения"""
@@ -105,6 +144,12 @@ class MessageCreateView(LoginRequiredMixin, CreateView):
     model = Message
     form_class = MessageForm
     success_url = reverse_lazy("mailservice:messages")
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.user = self.request.user
+        self.object.save()
+        return super().form_valid(form)
 
 
 class MessageUpdateView(LoginRequiredMixin, UpdateView):
