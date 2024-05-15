@@ -22,7 +22,7 @@ class Command(BaseCommand):
         zone = pytz.timezone(settings.TIME_ZONE)
         current_datetime = datetime.now(zone)
         mailing = MailingSettings.objects.filter(
-            date_and_time__lte=current_datetime
+            sent_time__lte=current_datetime
         ).filter(status__in=[MailingSettings.StatusMailingSettings.CREATED])
 
         for mailing in mailing:
@@ -37,19 +37,19 @@ class Command(BaseCommand):
                     mailing.period == MailingSettings.PeriodMailingSettings.ONE_DAY
                     and current_datetime.day >= 1
                 ):
-                    mailing.date_and_time = F("date_and_time") + timedelta(days=1)
+                    mailing.sent_time = F("sent_time") + timedelta(days=1)
                     mailing.status = MailingSettings.StatusMailingSettings.STARTED
                 elif (
                     mailing.period == MailingSettings.PeriodMailingSettings.ONE_WEEK
                     and current_datetime.day >= 7
                 ):
-                    mailing.date_and_time = F("date_and_time") + timedelta(days=7)
+                    mailing.sent_time = F("sent_time") + timedelta(days=7)
                     mailing.status = MailingSettings.StatusMailingSettings.STARTED
                 elif (
                     mailing.period == MailingSettings.PeriodMailingSettings.ONE_MONTH
                     and current_datetime.day >= 30
                 ):
-                    mailing.date_and_time = F("date_and_time") + timedelta(days=30)
+                    mailing.sent_time = F("sent_time") + timedelta(days=30)
                     mailing.status = MailingSettings.StatusMailingSettings.STARTED
                 mailing.save()
                 status = True

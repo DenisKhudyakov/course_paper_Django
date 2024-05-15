@@ -55,9 +55,8 @@ class MailingSettings(models.Model):
         default=timezone.now, verbose_name="дата создания рассылки"
     )  # создание рассылки
 
-    date_and_time = models.DateField(
-        default=timezone.now, verbose_name="дата и время первой рассылки"
-    )
+    sent_time = models.DateField(default=timezone.now, null=True, blank=True,
+                                 verbose_name='время отправки рассылки')
     period = models.CharField(
         max_length=50,
         choices=PeriodMailingSettings,
