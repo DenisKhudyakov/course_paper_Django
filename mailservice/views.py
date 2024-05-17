@@ -32,7 +32,7 @@ class ClientDetailView(LoginRequiredMixin, UserRequiredMixin, DetailView):
     model = Client
 
 
-class ClientCreateView(LoginRequiredMixin, UserRequiredMixin, CreateView):
+class ClientCreateView(LoginRequiredMixin, CreateView):
     """Класс создания клиента"""
 
     model = Client
@@ -49,7 +49,7 @@ class ClientCreateView(LoginRequiredMixin, UserRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class ClientUpdateView(LoginRequiredMixin, UpdateView):
+class ClientUpdateView(LoginRequiredMixin, UserRequiredMixin, UpdateView):
     """Класс редактирования клиента"""
 
     model = Client
@@ -85,7 +85,7 @@ class MailingSettingsDetailView(LoginRequiredMixin, UserRequiredMixin, DetailVie
     model = MailingSettings
 
 
-class MailingSettingsCreateView(LoginRequiredMixin, UserRequiredMixin, CreateView):
+class MailingSettingsCreateView(LoginRequiredMixin, CreateView):
     """Класс создания рассылки"""
 
     model = MailingSettings
@@ -132,7 +132,7 @@ class MessageListView(ListView):
             return Client.objects.filter(owner=self.request.user)
 
 
-class MessageDetailView(DetailView):
+class MessageDetailView(LoginRequiredMixin, DetailView):
     """Класс отображения отдельного сообщения"""
 
     model = Message
@@ -152,7 +152,7 @@ class MessageCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class MessageUpdateView(LoginRequiredMixin, UpdateView):
+class MessageUpdateView(LoginRequiredMixin, UserRequiredMixin, UpdateView):
     """Класс редактирования сообщения"""
 
     model = Message
@@ -160,7 +160,7 @@ class MessageUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy("mailservice:messages")
 
 
-class MessageDeleteView(LoginRequiredMixin, DeleteView):
+class MessageDeleteView(LoginRequiredMixin, UserRequiredMixin, DeleteView):
     """Класс удаления сообщения"""
 
     model = Message
